@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyMate - منصة الصف الثامن المتكاملة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: #334155; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        .glow-effect { box-shadow: 0 0 25px rgba(59, 130, 246, 0.3); }
+    </style>
+</head>
+<body class="bg-slate-900 min-h-screen font-sans antialiased">
+
+    <!-- 1. شاشة تسجيل الدخول المحمية -->
+    <div id="passcode-page" class="min-h-screen flex items-center justify-center p-4 bg-slate-950">
+        <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center space-y-6 border-t-8 border-blue-600 glow-effect relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-24 h-24 bg-blue-500/10 rounded-full blur-xl"></div>
+            <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-inner transform -rotate-3 hover:rotate-0 transition duration-300">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">StudyMate 8</h1>
+                <p class="text-slate-500 text-sm mt-1 font-medium">بوابة التواصل والملفات المعتمدة للصف الثامن</p>
+            </div>
+            <div class="space-y-4 pt-2">
+                <div class="text-right">
+                    <label class="text-xs font-bold text-slate-600 mr-1">اسم الطالب / المستخدم:</label>
+                    <input type="text" id="username-input" placeholder="مثال: mujtaba" class="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-right text-sm font-semibold text-slate-700 bg-slate-50/50">
+                </div>
+                <div class="text-right">
+                    <label class="text-xs font-bold text-slate-600 mr-1">رمز الأمان (Passcode):</label>
+                    <input type="password" id="passcode-input" placeholder="••••" class="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-center tracking-widest text-xl font-bold text-slate-800 bg-slate-50/50">
+                </div>
+                <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transition duration-200 text-base flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> دخول المنصة
+                </button>
+                <p id="passcode-error" class="text-red-500 text-xs hidden font-bold bg-red-50 py-2 rounded-lg border border-red-100">اسم المستخدم أو رمز الأمان غير صحيح!</p>
+            </div>
+            <div class="text-xs text-slate-400 border-t border-slate-100 pt-4">
+                رمز الصف الموحد التجريبي: <span class="font-bold text-blue-600">8888</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. المنصة الرئيسية المتكاملة -->
+    <div id="main-app" class="hidden min-h-screen w-full bg-slate-100 flex-col">
+        <!-- الشريط العلوي (Header) -->
+        <header class="bg-slate-900 text-white shadow-xl border-b border-slate-800 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md">
+                        <i class="fa-solid fa-book-open text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-extrabold tracking-wide flex items-center gap-2">
+                            StudyMate <span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30">الصف الثامن</span>
+                        </h1>
+                        <p class="text-[11px] text-slate-400">منصة مشاركة الدروس والشروحات والواجبات</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/60 flex items-center gap-2">
+                        <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <span id="user-display-name" class="text-xs font-bold text-slate-200">طالب</span>
+                    </div>
+                    <button onclick="logout()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 p-2 rounded-xl text-xs transition border border-red-500/20" title="تسجيل الخروج">
+                        <i class="fa-solid fa-power-off text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- أزرار التبويب والتنقل (Navigation Bar) -->
+        <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-[61px] z-40">
+            <div class="max-w-7xl mx-auto px-4 flex space-x-8 space-x-reverse overflow-x-auto">
+                <button onclick="switchTab('chat')" id="tab-btn-chat" class="tab-btn py-3.5 px-2 font-bold text-blue-600 border-b-2 border-blue-600 flex items-center gap-2 text-sm whitespace-nowrap transition">
+                    <i class="fa-solid fa-comments text-base"></i> غرف المحادثة والدردشة
+                </button>
+                <button onclick="switchTab('files')" id="tab-btn-files" class="tab-btn py-3.5 px-2 font-semibold text-slate-500 hover:text-blue-600 border-b-2 border-transparent flex items-center gap-2 text-sm whitespace-nowrap transition">
+                    <i class="fa-solid fa-folder-open text-base"></i> مكتبة الشروحات والملفات
+                </button>
+                <button onclick="switchTab('schedule')" id="tab-btn-schedule" class="tab-btn py-3.5 px-2 font-semibold text-slate-500 hover:text-blue-600 border-b-2 border-transparent flex items-center gap-2 text-sm whitespace-nowrap transition">
+                    <i class="fa-solid fa-calendar-days text-base"></i> جدول الحصص والواجبات
+                </button>
+            </div>
+        </nav>
+
+        <!-- محتوى الصفحة الرئيسي (Main Content) -->
+        <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                
+                <!-- الشريط الجانبي (Sidebar) -->
+                <div class="lg:col-span-1 space-y-5">
+                    <!-- بطاقة ملف الطالب -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 text-center space-y-3">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border-2 border-blue-500">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <div>
+                            <h3 id="profile-name" class="font-bold text-slate-800">مجتبى</h3>
+                            <p class="text-xs text-slate-400">طالب في الصف الثامن الأساسي</p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-center text-xs">
+                            <div class="bg-slate-50 p-2 rounded-lg">
+                                <span class="block text-slate-400">الشعبة</span>
+                                <span class="font-bold text-slate-700">الصف 8 (أ)</span>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded-lg">
+                                <span class="block text-slate-400">الفرع</span>
+                                <span class="font-bold text-blue-600">عام</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- إعلانات الصف التنبيهية -->
+                    <div class="bg-gradient-to-br from-blue-950 to-slate-900 text-white p-5 rounded-2xl shadow-md space-y-3">
+                        <h4 class="font-bold text-sm text-blue-400 flex items-center gap-2">
+                            <i class="fa-solid fa-bullhorn"></i> تنبيهات هامّة
+                        </h4>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            يرجى من جميع الطلاب مراجعة قسم الملفات لمتابعة ملخصات امتحانات الفصل، ومشاركة الأسئلة في غرفة الدردشة.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- المنطقة المركزية (Main Display) -->
+                <div class="lg:col-span-3">
+
+                    <!-- 1. قسم غرفة المحادثة والدردشة -->
+                    <div id="tab-content-chat" class="tab-content bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col h-[620px]">
+                        <div class="p-4 border-b border-slate-100 bg-slate-50/80 rounded-t-2xl flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-comments text-blue-600 text-lg"></i>
+                                <h3 class="font-bold text-slate-800">الدردشة الصفية العامة</h3>
+                            </div>
+                            <span class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-bold">نشط الآن</span>
+                        </div>
+                        <div id="chat-messages" class="flex-grow p-4 overflow-y-auto custom-scroll space-y-4 bg-slate-50/40">
+                            <!-- الترحيب التلقائي -->
+                            <div class="flex flex-col items-center justify-center my-4">
+                                <span class="bg-blue-50 text-blue-600 border border-blue-100 text-xs px-4 py-1.5 rounded-full font-medium">
+                                    مرحباً بكم في غرفة المحادثة الرسمية للصف الثامن!
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-3 border-t border-slate-100 bg-white rounded-b-2xl">
+                            <form onsubmit="sendMessage(event)" class="flex gap-2">
+                                <input type="text" id="chat-input" placeholder="اكتب استفسارك أو رسالتك لزملائك..." class="flex-grow px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition shadow-md shadow-blue-500/20 flex items-center justify-center gap-2">
+                                    <span>إرسال</span> <i class="fa-solid fa-paper-plane text-xs"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 2. قسم مكتبة الشروحات والملفات المفصلة -->
+                    <div id="tab-content-files" class="tab-content hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-folder-open text-blue-600"></i> مكتبة المستندات والملخصات
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-0.5">حمّل واطلع على جميع ملخصات الدروس والامتحانات</p>
+                            </div>
+                            <button onclick="openUploadAlert()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition flex items-center gap-2">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> رفع ملف جديد
+                            </button>
+                        </div>
+
+                        <!-- شبكة المواد والملفات -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- ملف 1 -->
+                            <div class="p-4 rounded-xl border border-slate-200 hover:border-blue-300 bg-slate-50/50 flex justify-between items-center transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center text-lg font-bold">PDF</div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-800">ملخص امتحان العلوم - الذرة والروابط</h4>
+                                        <p class="text-[11px] text-slate-400">حجم الملف: 2.4 MB • تم الرفع مؤخراً</p>
+                                    </div>
+                                </div>
+                                <button onclick="alert('جاري تحميل الملف...')" class="text-blue-600 hover:bg-blue-50 p-2 rounded-lg text-sm transition">
+                                    <i class="fa-solid fa-download"></i>
+                                </button>
+                            </div>
+
+                            <!-- ملف 2 -->
+                            <div class="p-4 rounded-xl border border-slate-200 hover:border-blue-300 bg-slate-50/50 flex justify-between items-center transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-lg font-bold">DOC</div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-800">تمارين الرياضيات - الهندسة والـ Parallelogram</h4>
+                                        <p class="text-[11px] text-slate-400">حجم الملف: 1.8 MB • الصف الثامن</p>
+                                    </div>
+                                </div>
+                                <button onclick="alert('جاري تحميل الملف...')" class="text-blue-600 hover:bg-blue-50 p-2 rounded-lg text-sm transition">
+                                    <i class="fa-solid fa-download"></i>
+                                </button>
+                            </div>
+
+                            <!-- ملف 3 -->
+                            <div class="p-4 rounded-xl border border-slate-200 hover:border-blue-300 bg-slate-50/50 flex justify-between items-center transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-lg font-bold">PDF</div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-800">تحليل نصوص اللغة العربية والإعراب</h4>
+                                        <p class="text-[11px] text-slate-400">حجم الملف: 3.1 MB • شامل القواعد</p>
+                                    </div>
+                                </div>
+                                <button onclick="alert('جاري تحميل الملف...')" class="text-blue-600 hover:bg-blue-50 p-2 rounded-lg text-sm transition">
+                                    <i class="fa-solid fa-download"></i>
+                                </button>
+                            </div>
+
+                            <!-- ملف 4 -->
+                            <div class="p-4 rounded-xl border border-slate-200 hover:border-blue-300 bg-slate-50/50 flex justify-between items-center transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-lg font-bold">ZIP</div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-800">مجموعة أسئلة وفروض اللغة الإنجليزية</h4>
+                                        <p class="text-[11px] text-slate-400">حجم الملف: 5.0 MB • تمارين وتطبيقات</p>
+                                    </div>
+                                </div>
+                                <button onclick="alert('جاري تحميل الملف...')" class="text-blue-600 hover:bg-blue-50 p-2 rounded-lg text-sm transition">
+                                    <i class="fa-solid fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. قسم جدول الحصص والواجبات -->
+                    <div id="tab-content-schedule" class="tab-content hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-check text-blue-600"></i> الجدول الدراسي والواجبات اليومية
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-0.5">جدول متابعة الدروس اليومية للصف الثامن</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-right text-xs">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                                        <th class="p-3">اليوم</th>
+                                        <th class="p-3">الحصة الأولى</th>
+                                        <th class="p-3">الحصة الثانية</th>
+                                        <th class="p-3">الحصة الثالثة</th>
+                                        <th class="p-3">الواجب المطلوب</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700">
+                                    <tr>
+                                        <td class="p-3 font-bold text-blue-600">الإثنين</td>
+                                        <td class="p-3">رياضيات</td>
+                                        <td class="p-3">علوم (كيمياء)</td>
+                                        <td class="p-3">لغة عربية</td>
+                                        <td class="p-3"><span class="bg-amber-50 text-amber-600 px-2 py-1 rounded font-semibold">حل تمارين ص 42</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-blue-600">الثلاثاء</td>
+                                        <td class="p-3">لغة إنجليزية</td>
+                                        <td class="p-3">تربية وطنية</td>
+                                        <td class="p-3">فيزياء</td>
+                                        <td class="p-3"><span class="bg-blue-50 text-blue-600 px-2 py-1 rounded font-semibold">قراءة درس الحقوق</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-blue-600">الأربعاء</td>
+                                        <td class="p-3">رياضيات</td>
+                                        <td class="p-3">أحياء</td>
+                                        <td class="p-3">جغرافيا</td>
+                                        <td class="p-3"><span class="bg-emerald-50 text-emerald-600 px-2 py-1 rounded font-semibold">تحضير خريطة المناخ</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- البرمجة والأكواد (JavaScript Logic) -->
+    <script>
+        // قائمة الطلاب المسجلين بالصف
+        const CLASS_STUDENTS = [
+            { username: "mujtaba", pass: "8888", name: "مجتبى" },
+            { username: "ali", pass: "8888", name: "علي" },
+            { username: "hassan", pass: "8888", name: "حسن" },
+            { username: "admin", pass: "8888", name: "مشرف الصف" }
+        ];
+
+        function checkLogin() {
+            const userInput = document.getElementById('username-input').value.trim();
+            const passInput = document.getElementById('passcode-input').value.trim();
+            const error = document.getElementById('passcode-error');
+
+            const student = CLASS_STUDENTS.find(s => s.username.toLowerCase() === userInput.toLowerCase() && s.pass === passInput);
+
+            if (student || (userInput !== "" && passInput === "8888")) {
+                const displayName = student ? student.name : userInput;
+                document.getElementById('passcode-page').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('main-app').classList.add('flex');
+                
+                document.getElementById('user-display-name').innerText = displayName;
+                document.getElementById('profile-name').innerText = displayName;
+                
+                localStorage.setItem('sm_user', displayName);
+                localStorage.setItem('sm_auth', 'true');
+            } else {
+                error.classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('sm_auth');
+            localStorage.removeItem('sm_user');
+            location.reload();
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('text-blue-600', 'border-blue-600', 'font-bold');
+                el.classList.add('text-slate-500', 'border-transparent', 'font-semibold');
+            });
+            
+            document.getElementById(`tab-content-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            activeBtn.classList.add('text-blue-600', 'border-blue-600', 'font-bold');
+            activeBtn.classList.remove('text-slate-500', 'border-transparent', 'font-semibold');
+        }
+
+        function sendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            if(!input.value.trim()) return;
+
+            const chatBox = document.getElementById('chat-messages');
+            const userName = localStorage.getItem('sm_user') || "طالب";
+            
+            const msg = document.createElement('div');
+            msg.className = "flex flex-col items-end space-y-1";
+            msg.innerHTML = `
+                <span class="text-[10px] font-bold text-slate-500 mr-1">${userName}</span>
+                <div class="bg-blue-600 text-white px-4 py-2.5 rounded-2xl rounded-tr-none max-w-sm text-sm shadow-sm">${input.value}</div>
+                <span class="text-[9px] text-slate-400 mr-1">الآن</span>
+            `;
+            chatBox.appendChild(msg);
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function openUploadAlert() {
+            alert("ميزة رفع الملفات جاهزة ويمكنك اختيار الملف من جهازك فور ربط السيرفر!");
+        }
+
+        window.onload = function() {
+            if (localStorage.getItem('sm_auth') === 'true') {
+                const savedUser = localStorage.getItem('sm_user') || "طالب";
+                document.getElementById('passcode-page').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('main-app').classList.add('flex');
+                document.getElementById('user-display-name').innerText = savedUser;
+                document.getElementById('profile-name').innerText = savedUser;
+            }
+        }
+    </script>
+</body>
+</html>
